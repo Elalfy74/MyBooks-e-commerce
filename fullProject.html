@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width;initial-scale=1" />
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link href="css/font-awesome.css" rel="stylesheet" />
+    <style>
+        body {
+            padding-top: 10px;
+        }
+
+        td {
+            padding-right: 10px;
+
+        }
+        .card{
+            box-shadow: 2px 2px 10px;
+        }
+        .more{
+            background: -webkit-linear-gradient(top,white 70%,green);
+            
+        }
+        .less{
+            background: -webkit-linear-gradient(top,white 70%,grey);
+        }
+        .card:hover{
+            background: -webkit-linear-gradient(top,grey 70%,white);
+        }
+    </style>
+
+    <script src="vueversion3.js"></script>
+</head>
+
+<body>
+
+    <div class="container" id="mainwrapper">
+        <div class="row justify-content-between p-2 align-items-baseline" style="background-color: #007E33;">
+            <h1><a @click.prevent="wishListView=false" href="" class="h1 badge badge-secondary">BOOKS</a></h1>
+            <div class="d-flex flex-row  align-items-baseline">
+                <p class="mr-2">Items : <span class="badge badge-success">{{wishListItems.length}}</span></p>
+                <button class="btn btn-secondary btn-m" :onclick="openwishListView">Open Wish List</button>
+            </div>
+
+        </div>
+        <div v-if="wishListView==false" class="row justify-content-center p-2">
+            <div :class="[book.numberOfPages>=50?'more' : less]" class="card m-1" style="width: 22rem" v-for="book in Books" :key="book.ISBD">
+                <img :src="book.Image" alt="" style="height:30rem" />
+                <div class="card-body ">
+                    <table>
+                        <tr>
+                            <td>
+                                <h6>Category:<span class="badge badge-success">{{book.Category}}</span> </h6>
+                            </td>
+                            <td>
+                                <h6>Author:<span class="badge badge-success">{{book.author}}</span> </h6>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h6>#Pages:<span class="badge badge-success">{{book.numberOfPages}}</span> </h6>
+                            </td>
+                            <td>
+                                <h6>Price:<span class="badge badge-success">{{book.price}}</span> </h6>
+                            </td>
+                        </tr>
+                        
+                    </table>
+
+                </div>
+                <div class="card-footer d-flex flex-row justify-content-between">
+                    <h6>ISBD:<span class="badge badge-success">{{book.ISBN}}</span></h6>
+                    <button @click="addToWishList(book)" class="btn btn-success btn-sm">Add to Wish List</button>
+                </div>
+            </div>
+        </div>
+        <div v-if="Books.length==0 && wishListView==false">
+            <h1>Empty</h1>
+        </div>
+        <div v-if="wishListView==true && wishListItems.length==0 ">
+            <h1>Your Wish List is Empty</h1>
+        </div>
+
+        <div v-if="wishListView==true && wishListItems.length>0">
+            <table class="table">
+                <tr>
+                    <th>ISBN</th>
+                    <th>Name</th>
+                    <th>#Pages</th>
+                    <th>Price</th>
+                </tr>
+                <tr v-for="item in wishListItems">
+                    <td>{{item.ISBN}}</td>
+                    <td>{{item.Name}}</td>
+                    <td>{{item.numberOfPages}}</td>
+                    <td>{{item.price}}</td>
+                    <td><p @click="removeItem(item)" style="cursor: pointer;" class=" fa fa-trash text-danger" aria-hidden="true" ></p></td>
+                </tr>
+                <tr>
+                    <th class="text-center text-success" colspan="2">Total</th>
+                    <th class="text-center text-success" colspan="3">{{currencyFormat(TotalPrice)}}</th>
+                </tr>
+
+            </table>
+        </div>
+
+    </div>
+
+    <script src="js/JQuery-3.3.1.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="Books.js"></script>
+    <script>
+        const app = Vue.createApp({
+
+            data: () => ({
+                Books: Books,
+                wishListView: false,
+                wishListItems: [],
+            }),
+            methods: {
+                openwishListView() {
+                    this.wishListView = true;
+                },
+                addToWishList(book) {
+                    this.wishListItems.push(book)
+
+                    //if you don't want to remove the book from home page u could remove this piece of code
+                    let index;
+                    for (let i = 0; i < this.Books.length; i++) {
+                        if (this.Books[i].ISBN = book.ISBN) {
+                            index = i
+                            break;
+                        }
+                    }
+                    this.Books.splice(index, 1);
+                    //end of removing item code
+                },
+                removeItem(item){
+                    this.Books.push(item)
+                    let index;
+                    for (let i = 0; i < this.wishListItems.length; i++) {
+                        if (this.wishListItems[i].ISBN = item.ISBN) {
+                            index = i
+                            break;
+                        }
+                    }
+                    this.wishListItems.splice(index, 1);
+                },
+                currencyFormat(value){
+                    let newValue=Intl.NumberFormat("ar-SA",{
+                        style:'currency',
+                        currency:"SAR",
+                    });
+                    return newValue.format(value);
+                }
+            },
+            computed:{
+                TotalPrice(){
+                    let TotalPrice=0;
+                    for(let i=0;i<this.wishListItems.length;i++){
+                        TotalPrice+=parseInt(this.wishListItems[i].price) 
+                        
+                    }
+                    return TotalPrice;
+                }
+            }
+
+        });
+
+        app.mount('#mainwrapper');
+    </script>
+</body>
+
+</html>
