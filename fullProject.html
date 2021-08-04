@@ -129,7 +129,7 @@
                     //if you don't want to remove the book from home page u could remove this piece of code
                     let index;
                     for (let i = 0; i < this.Books.length; i++) {
-                        if (this.Books[i].ISBN = book.ISBN) {
+                        if (this.Books[i].ISBN == book.ISBN) {
                             index = i
                             break;
                         }
@@ -141,7 +141,7 @@
                     this.Books.push(item)
                     let index;
                     for (let i = 0; i < this.wishListItems.length; i++) {
-                        if (this.wishListItems[i].ISBN = item.ISBN) {
+                        if (this.wishListItems[i].ISBN == item.ISBN) {
                             index = i
                             break;
                         }
